@@ -7,9 +7,9 @@ dnl without editing.
 
 dnl If your extension references something external, use with:
 
-dnl PHP_ARG_WITH(hello_world, for hello_world support,
-dnl Make sure that the comment is aligned:
-dnl [  --with-hello_world             Include hello_world support])
+PHP_ARG_WITH(hello_world, for hello_world support,
+Make sure that the comment is aligned:
+[  --with-hello_world             Include hello_world support])
 
 dnl Otherwise use enable:
 
