@@ -165,6 +165,12 @@ PHP_FUNCTION(confirm_hello_world_compiled)
 	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "hello_world", arg);
 	RETURN_STRINGL(strg, len, 0);
 }
+
+PHP_FUNCTION(hello_world)
+{
+    php_printf("hello world!");
+}
+
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 
    unfold functions in source code. See the corresponding marks just before 
