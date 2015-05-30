@@ -45,6 +45,7 @@ PHP_RSHUTDOWN_FUNCTION(hello_world);
 PHP_MINFO_FUNCTION(hello_world);
 
 PHP_FUNCTION(confirm_hello_world_compiled);	/* For testing, remove later. */
+PHP_FUNCTION(hello_world);
 
 /* 
   	Declare any global variables you may need between the BEGIN
