@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("dlist", "for dlist support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("dlist", "enable dlist support", "no");
+
+if (PHP_DLIST != "no") {
+	EXTENSION("dlist", "dlist.c");
+}
+
