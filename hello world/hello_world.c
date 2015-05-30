@@ -172,6 +172,18 @@ PHP_FUNCTION(hello_world)
     php_printf("hello world!");
 }
 
+PHP_FUNCTION(hello_world_argus)
+{
+	char *arg = NULL;
+	int arg_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+		return;
+	}
+
+    php_printf("The user arug is:%s", arg);
+}
+
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 
    unfold functions in source code. See the corresponding marks just before 
