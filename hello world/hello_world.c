@@ -40,7 +40,8 @@ static int le_hello_world;
  */
 const zend_function_entry hello_world_functions[] = {
 	PHP_FE(confirm_hello_world_compiled,	NULL)		/* For testing, remove later. */
-	PHP_FE(hello_world,	NULL)
+	PHP_FE(hello_world,	NULL)		
+	PHP_FE(hello_world_argus,	NULL)	
 	PHP_FE_END	/* Must be the last line in hello_world_functions[] */
 };
 /* }}} */
