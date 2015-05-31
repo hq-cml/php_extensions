@@ -38,8 +38,15 @@ static int le_dlist;
  *
  * Every user visible function must have an entry in dlist_functions[].
  */
+//ÉùÃ÷zendº¯Êý¿é
 const zend_function_entry dlist_functions[] = {
-	PHP_FE(confirm_dlist_compiled,	NULL)		/* For testing, remove later. */
+	PHP_FE(dlist_create,	NULL)
+	PHP_FE(dlist_add_head,	NULL)
+	PHP_FE(dlist_add_tail,	NULL)
+	PHP_FE(dlist_fetch_index,	NULL)
+	PHP_FE(dlist_delete_index,	NULL)
+	PHP_FE(dlist_destroy,	NULL)
+	PHP_FE(dlist_element_nums,	NULL)
 	PHP_FE_END	/* Must be the last line in dlist_functions[] */
 };
 /* }}} */
