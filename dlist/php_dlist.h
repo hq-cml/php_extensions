@@ -44,7 +44,14 @@ PHP_RINIT_FUNCTION(dlist);
 PHP_RSHUTDOWN_FUNCTION(dlist);
 PHP_MINFO_FUNCTION(dlist);
 
-PHP_FUNCTION(confirm_dlist_compiled);	/* For testing, remove later. */
+//声明导出函数
+PHP_FUNCTION(dlist_create);
+PHP_FUNCTION(dlist_add_head);
+PHP_FUNCTION(dlist_add_tail);
+PHP_FUNCTION(dlist_fetch_index);
+PHP_FUNCTION(dlist_delete_index);
+PHP_FUNCTION(dlist_destroy);
+PHP_FUNCTION(dlist_element_nums);
 
 /* 
   	Declare any global variables you may need between the BEGIN
