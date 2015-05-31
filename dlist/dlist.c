@@ -28,6 +28,22 @@
 #include "php_dlist.h"
 #include "dlist_src.h"
 
+
+dlist_head *dlist_create()
+{
+    dlist_head *head;
+    
+    head = (dlist_head *)malloc(sizeof(dlist_head));
+    
+    if(head)
+    {
+        head->size = 0;
+        head->head = NULL;
+        head->tail = NULL;
+    }
+    
+    return head;
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
