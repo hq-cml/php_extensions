@@ -100,9 +100,7 @@ static void php_dlist_init_globals(zend_dlist_globals *dlist_globals)
  */
 PHP_MINIT_FUNCTION(dlist)
 {
-	/* If you have INI entries, uncomment these lines 
-	REGISTER_INI_ENTRIES();
-	*/
+	le_dlist = zend_register_list_destructors_ex(dlist_destroy_handler, NULL, "list_resource", module_number);
 	return SUCCESS;
 }
 /* }}} */
@@ -111,9 +109,7 @@ PHP_MINIT_FUNCTION(dlist)
  */
 PHP_MSHUTDOWN_FUNCTION(dlist)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
+	
 	return SUCCESS;
 }
 /* }}} */
