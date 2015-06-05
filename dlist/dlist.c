@@ -44,6 +44,34 @@ dlist_head *dlist_create()
     
     return head;
 }
+
+int dlist_add_head(dlist_head *head, zval *value)
+{
+    dlist_node *node;
+    node = (dlist_node *)malloc(sizeof(*node));
+    if(!node)
+    {
+        return 0;
+    }
+    
+    node->value = value;
+    node->prev = NULL;
+    node->next = head->head;
+    
+    if(head->head)
+    {
+        head->head->prev = node;
+    }
+    
+    head->head = node;
+    if(!head->tail)
+    {
+        head->tail = head->head;
+    }
+    head->size++;
+    
+    return 1;
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
