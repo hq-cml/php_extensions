@@ -191,6 +191,20 @@ int dlist_length(dlist_head *head)
         return 0;
     }
 }
+
+void dlist_destroy(dlist_head *head)
+{
+    dlist_node *curr, *next;
+    curr = head->head;
+    while(curr)
+    {
+        next = curr->next;
+        free(curr);
+        curr = next;
+    }
+    
+    free(head);
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
