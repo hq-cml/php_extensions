@@ -100,6 +100,54 @@ int dlist_add_tail(dlist_head *head, zval *value)
     
     return 1;
 }
+
+int dlist_delete_index(dlist_head *head, int index)
+{
+    dlist_node *curr;
+    
+    if(index < 0)
+    {
+        index = (-index)-1;
+        curr = head->tail;
+        while(index>0)
+        {
+            curr = curr->prev;
+            index--;
+        }
+    }
+    else
+    {
+        curr = head->head;
+        while(index>0)
+        {
+            curr = curr->next;
+            index--;
+        }
+    }
+    
+    if(!curr || index>0) return 0;
+    
+    if(curr->prev)
+    {
+        curr->prev->next = curr->next;
+    }
+    else
+    {
+        head->head = curr->next;
+    }
+    
+    if(curr->next)
+    {
+        curr->next->prev = curr->prev;
+    }
+    else
+    {
+        head->tail = curr->prev;
+    }
+    
+    return 1;
+    
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
