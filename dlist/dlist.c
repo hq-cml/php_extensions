@@ -210,7 +210,8 @@ ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
 
 /* True global resources - no need for thread safety here */
-static int le_dlist;
+static int le_dlist;//dlist资源句柄，用于保存创建的链表结构资源
+static int freed=0;//是否已经释放了链表结构
 
 /* {{{ dlist_functions[]
  *
