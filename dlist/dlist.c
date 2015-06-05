@@ -179,6 +179,18 @@ int dlist_fetch(dlist_head *head, int index, zval **retval)
     
     return 1;
 }
+
+int dlist_length(dlist_head *head)
+{
+    if(head)
+    {
+        return head->size;
+    }
+    else
+    {
+        return 0;
+    }
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
