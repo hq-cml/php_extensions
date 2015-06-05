@@ -213,6 +213,23 @@ ZEND_DECLARE_MODULE_GLOBALS(dlist)
 static int le_dlist;//dlist资源句柄，用于保存创建的链表结构资源
 static int freed=0;//是否已经释放了链表结构
 
+/*
+ * PHP生命周期结束之前，会自动调用此函数
+ */
+//TSRMLS_DC，线程安全参数宏
+void dlist_destroy_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+    //freed不为真时才会释放链表
+    if(!freed)
+    {
+        dlist_head *list;
+        list = (dlist_head *)rsrc->ptr;
+        dlist_destroy(list);
+        
+        freed = 1;
+    }
+}
+
 /* {{{ dlist_functions[]
  *
  * Every user visible function must have an entry in dlist_functions[].
