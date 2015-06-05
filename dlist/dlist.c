@@ -148,6 +148,37 @@ int dlist_delete_index(dlist_head *head, int index)
     return 1;
     
 }
+
+int dlist_fetch(dlist_head *head, int index, zval **retval)
+{
+    dlist_node *node;
+    if(index > 0)
+    {
+        node = head->head;
+        while(node && index > 0)
+        {
+            node = node->next;
+            index --;
+        }
+    }
+    else
+    {
+        index = (-index)-1;
+        node = head->tail;
+        while(node && index > 0)
+        {
+            node = node->prev;
+            index--;
+        }
+    }
+    
+    if(!node || index>0)
+        return 0;
+    
+    *retval = node->value;
+    
+    return 1;
+}
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
