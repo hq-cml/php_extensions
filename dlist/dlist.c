@@ -453,7 +453,26 @@ PHP_FUNCTION(dlist_delete_index)
     }
 }
 
+PHP_FUNCTION(dlist_destroy)
+{
+    zval *lrc;
+    dlist_head *list;
 
+    //接受参数两个r:资源 z:实际的zval
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &lrc) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+    
+    //根据句柄，获得资源
+    ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
+    
+    if(!freed)
+    {
+        dlist_destroy(list);
+        freed = 1;
+    }
+}
 /*
  * Local variables:
  * tab-width: 4
