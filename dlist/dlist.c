@@ -359,16 +359,45 @@ PHP_FUNCTION(dlist_create)
     
 }
 
-/* Every user-visible function in PHP should document itself in the source */
-/* {{{ proto string confirm_dlist_compiled(string arg)
-   Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(confirm_dlist_compiled)
+PHP_FUNCTION(dlist_add_head)
 {
-	char *arg = NULL;
-	int arg_len, len;
-	char *strg;
+    zval *value;
+    zval *lrc;
+    dlist_head *list;
+    
+    //接受参数两个r:资源 z:实际的zval
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &lrc, &value) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+    
+    //根据句柄，获得资源
+    ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
+    
+    dlist_add_head(list, value);
+    
+    RETURN_TRUE;
+}
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+PHP_FUNCTION(dlist_add_tail)
+{
+    zval *value;
+    zval *lrc;
+    dlist_head *list;
+    
+    //接受参数两个r:资源 z:实际的zval
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &lrc, &value) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+    
+    //根据句柄，获得资源
+    ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
+    
+    dlist_add_tail(list, value);
+    
+    RETURN_TRUE;
+}
 		return;
 	}
 
