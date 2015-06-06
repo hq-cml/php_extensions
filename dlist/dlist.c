@@ -427,11 +427,31 @@ PHP_FUNCTION(dlist_fetch_index)
         RETURN_ZVAL(retval, 1, 0);
     }
 }
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
-   follow this convention for the convenience of others editing your code.
-*/
+
+PHP_FUNCTION(dlist_delete_index)
+{
+    zval *lrc;
+    dlist_head *list;
+    long index;
+    
+    //接受参数两个r:资源 z:实际的zval
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &lrc, &index) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+    
+    //根据句柄，获得资源
+    ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
+    
+    if(dlist_delete(list, index))
+    {
+        RETURN_TRUE;
+    }
+    else
+    {
+        RETURN_FALSE;
+    }
+}
 
 
 /*
