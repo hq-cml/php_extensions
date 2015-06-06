@@ -398,13 +398,35 @@ PHP_FUNCTION(dlist_add_tail)
     
     RETURN_TRUE;
 }
-		return;
-	}
 
-	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "dlist", arg);
-	RETURN_STRINGL(strg, len, 0);
+PHP_FUNCTION(dlist_fetch_index)
+{
+    zval *retval;
+    zval *lrc;
+    dlist_head *list;
+    long index;
+    int res;
+    
+    //接受参数两个r:资源 z:实际的zval
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &lrc, &index) == FAILURE)
+    {
+        RETURN_FALSE;
+    }
+    
+    //根据句柄，获得资源
+    ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
+    
+    res = dlist_fetch(list, index, &retval);
+    
+    if(!res)
+    {
+        RETURN_NULL();
+    }
+    else
+    {
+        RETURN_ZVAL(retval, 1, 0);
+    }
 }
-/* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 
    unfold functions in source code. See the corresponding marks just before 
    function definition, where the functions purpose is also documented. Please 
