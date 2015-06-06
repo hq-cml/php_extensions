@@ -205,6 +205,7 @@ void dlist_destroy(dlist_head *head)
     
     free(head);
 }
+
 /* If you declare any globals in php_dlist.h uncomment this:
 ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
@@ -340,12 +341,23 @@ PHP_MINFO_FUNCTION(dlist)
 	DISPLAY_INI_ENTRIES();
 	*/
 }
-/* }}} */
 
-
-/* Remove the following function when you have successfully modified config.m4
-   so that your module can be compiled into PHP, it exists only for testing
-   purposes. */
+PHP_FUNCTION(dlist_create)
+{
+	dlist_head *list;
+    list = dlist_create();
+    
+    if(!list)
+    {
+        RETURN_NULL();
+    }
+    else
+    {
+        //把list注册到Zend引擎的资源列表中
+        ZEND_REGISTER_RESOURCE(return_value, list, le_dlist);
+    }
+    
+}
 
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_dlist_compiled(string arg)
