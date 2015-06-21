@@ -145,9 +145,12 @@ int dlist_delete_index(dlist_head *head, int index)
     }
     else
     {
+        //curr->prev->next = NULL;
         head->tail = curr->prev;
     }
     
+    //delete
+    head->size--;
     return 1;
     
 }
