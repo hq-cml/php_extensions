@@ -161,11 +161,12 @@ int dlist_delete_index(dlist_head *head, int index)
 int dlist_fetch(dlist_head *head, int index, zval **retval)
 {
     dlist_node *node;
-    if(index > 0)
+    if(index >= 0)
     {
         node = head->head;
         while(node && index > 0)
         {
+            //printf("Addr:%p, index:%d\n", node, index);
             node = node->next;
             index --;
         }
@@ -182,8 +183,10 @@ int dlist_fetch(dlist_head *head, int index, zval **retval)
     }
     
     if(!node || index>0)
+    {
+        //printf("return 0\n");
         return 0;
-    
+    }
     *retval = node->value;
     
     return 1;
