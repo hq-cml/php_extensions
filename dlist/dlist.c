@@ -26,7 +26,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_dlist.h"
-#include "dlist_src.h"
+#include "dlist.h"
 
 
 dlist_head *dlist_create()
