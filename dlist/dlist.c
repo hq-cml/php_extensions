@@ -151,6 +151,9 @@ int dlist_delete_index(dlist_head *head, int index)
     
     //delete
     head->size--;
+    
+    //memleak
+    free(curr);
     return 1;
     
 }
