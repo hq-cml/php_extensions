@@ -109,7 +109,7 @@ int dlist_delete_index(dlist_head *head, int index)
     {
         index = (-index)-1;
         curr = head->tail;
-        while(index>0)
+        while(curr && index>0)
         {
             curr = curr->prev;
             index--;
@@ -118,15 +118,18 @@ int dlist_delete_index(dlist_head *head, int index)
     else
     {
         curr = head->head;
-        while(index>0)
+        while(curr && index>0)
         {
             curr = curr->next;
             index--;
         }
     }
     
-    if(!curr || index>0) return 0;
-    
+    if(!curr || index>0) 
+    {
+        //printf("return 0\n");
+        return 0;
+    }
     if(curr->prev)
     {
         curr->prev->next = curr->next;
