@@ -223,16 +223,16 @@ ZEND_DECLARE_MODULE_GLOBALS(dlist)
 */
 
 /* True global resources - no need for thread safety here */
-static int le_dlist;//dlist×ÊÔ´¾ä±ú£¬ÓÃÓÚ±£´æ´´½¨µÄÁ´±í½á¹¹×ÊÔ´
-static int freed=0;//ÊÇ·ñÒÑ¾­ÊÍ·ÅÁËÁ´±í½á¹¹
+static int le_dlist;//dlistèµ„æºå¥æŸ„ï¼Œç”¨äºä¿å­˜åˆ›å»ºçš„é“¾è¡¨ç»“æ„èµ„æº
+static int freed=0;//æ˜¯å¦å·²ç»é‡Šæ”¾äº†é“¾è¡¨ç»“æ„
 
 /*
- * PHPÉúÃüÖÜÆÚ½áÊøÖ®Ç°£¬»á×Ô¶¯µ÷ÓÃ´Ëº¯Êı
+ * PHPç”Ÿå‘½å‘¨æœŸç»“æŸä¹‹å‰ï¼Œä¼šè‡ªåŠ¨è°ƒç”¨æ­¤å‡½æ•°
  */
-//TSRMLS_DC£¬Ïß³Ì°²È«²ÎÊıºê
+//TSRMLS_DCï¼Œçº¿ç¨‹å®‰å…¨å‚æ•°å®
 void dlist_destroy_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
-    //freed²»ÎªÕæÊ±²Å»áÊÍ·ÅÁ´±í
+    //freedä¸ä¸ºçœŸæ—¶æ‰ä¼šé‡Šæ”¾é“¾è¡¨ï¼Œé˜²æ­¢é‡å¤é‡Šæ”¾
     if(!freed)
     {
         dlist_head *list;
@@ -247,7 +247,7 @@ void dlist_destroy_handler(zend_rsrc_list_entry *rsrc TSRMLS_DC)
  *
  * Every user visible function must have an entry in dlist_functions[].
  */
-//ÉùÃ÷zendº¯Êı¿é
+//å£°æ˜zendå‡½æ•°å—
 const zend_function_entry dlist_functions[] = {
 	PHP_FE(dlist_create,	NULL)
 	PHP_FE(dlist_add_head,	NULL)
@@ -365,7 +365,7 @@ PHP_FUNCTION(dlist_create)
     }
     else
     {
-        //°Ñlist×¢²áµ½ZendÒıÇæµÄ×ÊÔ´ÁĞ±íÖĞ
+        //æŠŠlistæ³¨å†Œåˆ°Zendå¼•æ“çš„èµ„æºåˆ—è¡¨ä¸­
         ZEND_REGISTER_RESOURCE(return_value, list, le_dlist);
     }
     
@@ -377,13 +377,13 @@ PHP_FUNCTION(dlist_add_head)
     zval *lrc;
     dlist_head *list;
     
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &lrc, &value) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     dlist_add_head(list, value);
@@ -397,13 +397,13 @@ PHP_FUNCTION(dlist_add_tail)
     zval *lrc;
     dlist_head *list;
     
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &lrc, &value) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     dlist_add_tail(list, value);
@@ -419,13 +419,13 @@ PHP_FUNCTION(dlist_fetch_index)
     long index;
     int res;
     
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &lrc, &index) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     res = dlist_fetch(list, index, &retval);
@@ -446,13 +446,13 @@ PHP_FUNCTION(dlist_delete_index)
     dlist_head *list;
     long index;
     
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &lrc, &index) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     if(dlist_delete(list, index))
@@ -470,13 +470,13 @@ PHP_FUNCTION(dlist_destroy)
     zval *lrc;
     dlist_head *list;
 
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &lrc) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     if(!freed)
@@ -491,13 +491,13 @@ PHP_FUNCTION(dlist_element_nums)
     zval *lrc;
     dlist_head *list;
     
-    //½ÓÊÜ²ÎÊıÁ½¸ör:×ÊÔ´ z:Êµ¼ÊµÄzval
+    //æ¥å—å‚æ•°ä¸¤ä¸ªr:èµ„æº z:å®é™…çš„zval
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &lrc) == FAILURE)
     {
         RETURN_FALSE;
     }
     
-    //¸ù¾İ¾ä±ú£¬»ñµÃ×ÊÔ´
+    //æ ¹æ®å¥æŸ„ï¼Œè·å¾—èµ„æº
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
     RETURN_LONG(dlist_length(list));
