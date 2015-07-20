@@ -1,8 +1,12 @@
 <?php
     $list = dlist_create();
-    dlist_add_head($list, "a");
-    dlist_add_head($list, "b");
-    dlist_add_head($list, "c");
+    $a = "a";
+    $b = "b";
+    $c = "c";
+    dlist_add_head($list, $a);
+    dlist_add_head($list, $b);
+    dlist_add_head($list, $c);
+
     
     
     $length = dlist_element_nums($list);
@@ -11,4 +15,7 @@
     
     echo "The Content of dlist:<br>";
     for($i = 0; $i < $length; $i++)
-        echo dlist_fetch_index($list, $i)." ";
+    {
+        var_dump( dlist_fetch_index($list, $i));
+        echo "<br>";
+    }
