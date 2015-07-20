@@ -188,7 +188,8 @@ int dlist_fetch(dlist_head *head, int index, zval **retval)
         return 0;
     }
     *retval = node->value;
-    
+    //php_printf("TTTTTTTTTTT:%d<br>", Z_TYPE_PP(retval));
+
     return 1;
 }
 
