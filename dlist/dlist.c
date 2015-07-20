@@ -378,12 +378,24 @@ PHP_FUNCTION(dlist_add_head)
     zval *lrc;
     dlist_head *list;
     
+    char *arg = NULL;
+	int arg_len;
+    
     //接受参数两个r:资源 z:实际的zval
+    
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rz", &lrc, &value) == FAILURE)
     {
         RETURN_FALSE;
     }
-    
+    /*
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &lrc, &arg, &arg_len) == FAILURE) {
+		return;
+	}
+    php_printf("The user arug is:%s", arg);
+    RETURN_TRUE;
+    */
+    //php_printf("str:%s<br>", Z_STRVAL_P(value));
+    //php_printf("t:%d<br>", Z_TYPE_P(value));
     //根据句柄，获得资源
     ZEND_FETCH_RESOURCE(list, dlist_head *, &lrc, -1, "List Resource", le_dlist);
     
