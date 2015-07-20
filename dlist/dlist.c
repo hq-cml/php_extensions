@@ -443,6 +443,8 @@ PHP_FUNCTION(dlist_fetch_index)
     
     res = dlist_fetch(list, index, &retval);
     
+    //php_printf("SSSSSSS:%d<br>", Z_TYPE_P(retval));
+
     if(!res)
     {
         RETURN_NULL();
