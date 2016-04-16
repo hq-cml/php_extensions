@@ -6,6 +6,18 @@ ZEND_FUNCTION(hq_hello)
     php_printf("Hello World!\n");
 }
 
+//接受一个普通的整形
+ZEND_FUNCTION(new_getlong) {
+ 
+    long foo;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC,"l", &foo) == FAILURE)
+    {
+        RETURN_NULL();
+    }
+    php_printf("The integer value of the parameter is: %ld\n", foo);
+    RETURN_TRUE;
+}
+
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
 
