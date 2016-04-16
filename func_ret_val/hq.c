@@ -11,9 +11,32 @@ ZEND_FUNCTION(simple_return)
     ZVAL_LONG(return_value, 10); //HQ：return_value是指针，这个变量是宏ZEND_FUCTION展开后就有的~
     return;
 }
+
+ZEND_FUNCTION(sample_array_range)
+{
+	if(return_value_used) 
+         {
+		int i;
+		array_init(return_value);//把返回值初始化成一个PHP语言中的数组
+
+		for(i = 0; i < 1000; i++)
+		{
+			//向retrun_value里不断的添加新元素，值为i
+			add_next_index_long(return_value, i);
+		}
+		return;
+	}
+	else
+	{
+		//抛出一个E_NOTICE级错误
+		php_error_docref(NULL TSRMLS_CC, E_NOTICE, "猫了个咪的，我就知道你没用我的劳动成果！");
+		RETURN_NULL();
+	}
+}
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
     ZEND_FE(simple_return,   NULL)
+    ZEND_FE(sample_array_range,   NULL)
     { NULL, NULL, NULL }
 };
 
