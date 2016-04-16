@@ -18,6 +18,20 @@ ZEND_FUNCTION(new_getlong) {
     RETURN_TRUE;
 }
 
+//接受字符串
+ZEND_FUNCTION(get_str) {
+    char *name;
+    int name_len;
+ 
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",&name, &name_len) == FAILURE)
+    {
+        RETURN_NULL();
+    }
+    php_printf("Hello ");
+    PHPWRITE(name, name_len);
+    php_printf("!\n");
+}
+
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
 
