@@ -1,6 +1,15 @@
 <?php
     echo "<pre>";
 
+    $a='china';
+    $b=&return_by_ref();
+    $b="This is a ref example";
+    echo $a."\n";//此时程序输出php
+
+    //废弃了
+    //$str = "abc";
+    //byref_calltime(&$str);
+    //echo $str."\n";
     hq_hello();
 
     echo "<br>";

@@ -33,10 +33,57 @@ ZEND_FUNCTION(sample_array_range)
 		RETURN_NULL();
 	}
 }
+
+//返回引用
+#if (PHP_MAJOR_VERSION > 5) || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0)
+//arguinfo通知内核这个函数特殊性，返回的是引用
+ZEND_BEGIN_ARG_INFO_EX(return_by_ref_arginfo, 0, 1, 0)
+ZEND_END_ARG_INFO ()
+
+ZEND_FUNCTION(return_by_ref)
+{
+	zval **a_ptr;
+	zval *a;
+
+	//检查全局作用域中是否有$a这个变量，如果没有则添加一个
+	//在内核中真的是可以胡作非为啊，:-)
+	if(zend_hash_find(&EG(symbol_table) , "a",sizeof("a"),(void **)&a_ptr ) == SUCCESS )
+	{
+		a = *a_ptr;
+	}
+	else
+	{
+		ALLOC_INIT_ZVAL(a);
+		zend_hash_add(&EG(symbol_table), "a", sizeof("a"), &a,sizeof(zval*), NULL);
+	}
+	
+	//废弃return_value,使用return_value_ptr来接替它的工作。HQ：原本的返回值被释放，用全局变量$a作为返回值的zval。
+	zval_ptr_dtor(return_value_ptr);
+	
+	//如果$a存在隐式的引用，则要进行分离，否则不分离，大多数情况不会进入这段逻辑的，为了便于首次学习理解，这一段逻辑暂时不考虑进入的情况
+	if( !a->is_ref__gc && a->refcount__gc > 1 )
+	{
+		zval *tmp;
+		MAKE_STD_ZVAL(tmp);
+		*tmp = *a;
+		zval_copy_ctor(tmp);
+		tmp->is_ref__gc = 0;
+		tmp->refcount__gc = 1;
+		zend_hash_update(&EG(symbol_table), "a", sizeof("a"), &tmp,sizeof(zval*), NULL);
+		a = tmp;
+	}
+	a->is_ref__gc = 1;
+	a->refcount__gc++;
+	*return_value_ptr = a; //返回值成了一个引用（不用新生成zval，和全局变量$a公用一个zval作为返回值，也就是返回值就是全局$a本身啦）
+}
+#endif/* PHP >= 5.1.0 */
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
     ZEND_FE(simple_return,   NULL)
     ZEND_FE(sample_array_range,   NULL)
+#if (PHP_MAJOR_VERSION > 5) || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0)
+    ZEND_FE(return_by_ref, return_by_ref_arginfo)
+#endif /* PHP >= 5.1.0 */
     { NULL, NULL, NULL }
 };
 
