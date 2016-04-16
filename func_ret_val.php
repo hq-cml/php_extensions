@@ -1,6 +1,9 @@
 <?php
     echo "<pre>";
 
+    $foo= 'I am a string';
+    byref_compiletime($foo);
+    echo $foo."\n";
     $a='china';
     $b=&return_by_ref();
     $b="This is a ref example";

@@ -77,6 +77,39 @@ ZEND_FUNCTION(return_by_ref)
 	*return_value_ptr = a; //返回值成了一个引用（不用新生成zval，和全局变量$a公用一个zval作为返回值，也就是返回值就是全局$a本身啦）
 }
 #endif/* PHP >= 5.1.0 */
+//传递引用参数
+#ifdef ZEND_ENGINE_2
+ZEND_BEGIN_ARG_INFO(byref_compiletime_arginfo, 0)
+    ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO()
+
+ZEND_FUNCTION(byref_compiletime)
+{
+	zval *a;
+
+	//我们我接收的参数传给zval *a;
+	if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &a) == FAILURE)
+	{
+		RETURN_NULL();
+	}
+
+	//如果a不是以应用的方式传递的。
+	if(!a->is_ref__gc)
+	{
+		return;
+	}
+
+	//将a转成字符串
+	convert_to_string(a);
+
+	//更改数据
+	ZVAL_STRING(a," (modified by ref!)",1);
+	return;
+}
+
+#else /* ZE 1 */
+static unsigned charbyref_compiletime_arginfo[] =   { 1, BYREF_FORCE };
+#endif
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
     ZEND_FE(simple_return,   NULL)
@@ -84,6 +117,7 @@ static zend_function_entry hq_functions[] = {
 #if (PHP_MAJOR_VERSION > 5) || (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 0)
     ZEND_FE(return_by_ref, return_by_ref_arginfo)
 #endif /* PHP >= 5.1.0 */
+    ZEND_FE(byref_compiletime, byref_compiletime_arginfo)
     { NULL, NULL, NULL }
 };
 
