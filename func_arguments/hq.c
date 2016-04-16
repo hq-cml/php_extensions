@@ -32,8 +32,30 @@ ZEND_FUNCTION(get_str) {
     php_printf("!\n");
 }
 
+//接受可选参数
+ZEND_FUNCTION(new_hello_world) {
+    char *name;
+    int name_len;
+    char *greeting = "Mr./Mrs.";
+    int greeting_len = sizeof("Mr./Mrs.") - 1;
+ 
+ 
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s",
+      &name, &name_len, &greeting, &greeting_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    php_printf("Hello ");
+    PHPWRITE(greeting, greeting_len);
+    php_printf(" ");
+    PHPWRITE(name, name_len);
+    php_printf("!\n");
+}
+
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
+	ZEND_FE(new_getlong,   NULL)
+	ZEND_FE(get_str,   NULL)
+    ZEND_FE(new_hello_world,   NULL)
 
     { NULL, NULL, NULL }
 };
