@@ -52,8 +52,29 @@ PHP_FUNCTION(my_fopen)
     ZEND_REGISTER_RESOURCE(return_value, fp, le_resource_id);
 }
 
+//资源的使用
+ZEND_FUNCTION(my_fwrite)
+{
+    FILE *fp;
+    zval *file_resource; 
+    char *data;
+    int data_len;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs",&file_resource, &data, &data_len) == FAILURE )
+    {
+        RETURN_NULL();
+    }
+    /* Use the zval* to verify the resource type and retrieve its pointer from the lookup table */
+    ZEND_FETCH_RESOURCE(fp,FILE*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id);
+     
+    /* Write the data, and
+     * return the number of bytes which were
+     * successfully written to the file */
+    RETURN_LONG(fwrite(data, 1, data_len, fp));
+}
+
 static zend_function_entry hq_functions[] = {
 	ZEND_FE(my_fopen,        NULL)
+	ZEND_FE(my_fwrite,       NULL)
     { NULL, NULL, NULL }
 };
 
