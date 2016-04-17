@@ -72,9 +72,24 @@ ZEND_FUNCTION(my_fwrite)
     RETURN_LONG(fwrite(data, 1, data_len, fp));
 }
 
+//关闭文件资源
+PHP_FUNCTION(my_fclose)
+{
+    FILE *fp;
+    zval *file_resource;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r",&file_resource) == FAILURE ) {
+        RETURN_NULL();
+    }
+     
+    /* Force the resource into self-destruct mode，处罚删除回调 */
+    zend_hash_index_del(&EG(regular_list),Z_RESVAL_P(file_resource));
+    RETURN_TRUE;
+}
+
 static zend_function_entry hq_functions[] = {
 	ZEND_FE(my_fopen,        NULL)
 	ZEND_FE(my_fwrite,       NULL)
+	ZEND_FE(my_fclose,       NULL)
     { NULL, NULL, NULL }
 };
 
