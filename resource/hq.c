@@ -16,9 +16,35 @@ ZEND_MINIT_FUNCTION(my_minit_func)
     return SUCCESS;
 }
 
+//创建资源
+PHP_FUNCTION(my_fopen)
+{
+    FILE* fp;
+    char* filename, *mode;
+    int filename_len, mode_len;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",&filename, &filename_len,&mode, &mode_len) == FAILURE)
+    {
+        RETURN_NULL();
+    }
+    if(!filename_len || !mode_len)
+    {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING,"Invalid filename or mode length");
+        RETURN_FALSE;
+    }
+    fp = fopen(filename, mode);
+    if(!fp)
+    {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING,"Unable to open %s using mode %s",filename, mode);
+        RETURN_FALSE;
+    }
+	
+    //将fp添加到资源池中HashTable去，并标记它为le_sample_descriptor类型的。这样的话，析构的时候就知道用哪个析构函数析构这个资源了
+	//此外，把此资源在其中对应的数字Key赋给return_value。
+    ZEND_REGISTER_RESOURCE(return_value, fp, le_resource_id);
+}
 
 static zend_function_entry hq_functions[] = {
-
+	{ my_fopen, NULL, NULL }
     { NULL, NULL, NULL }
 };
 
