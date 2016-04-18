@@ -6,12 +6,29 @@ ZEND_FUNCTION(hq_hello)
     php_printf("Hello World!\n");
 }
 
+//一个更为复杂的自定义类型作为资源类型
+typedef struct _php_my_resource_persistent_data
+{
+    char *filename;
+    FILE *fp;
+}php_my_resource_persistent_data;
+
 //文件资源的析构函数
 static void php_my_resource_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
-	php_printf("释放了一个资源~\n");
+	php_printf("释放了一个文件资源~\n");
     FILE *fp = (FILE*)rsrc->ptr;
     fclose(fp);
+}
+
+//文件资源的析构函数
+static void php_my_resource_persistent_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+	php_printf("释放了一个复杂资源~\n");
+    php_my_resource_persistent_data *fdata = (php_my_resource_persistent_data*)rsrc->ptr;
+    fclose(fdata->fp);
+    efree(fdata->filename);
+    efree(fdata);
 }
 
 //自定义一个资源
