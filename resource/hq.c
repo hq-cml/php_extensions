@@ -21,24 +21,29 @@ static void php_my_resource_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
     fclose(fp);
 }
 
-//文件资源的析构函数
+//复杂资源的析构函数
 static void php_my_resource_persistent_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	php_printf("释放了一个复杂资源~\n");
     php_my_resource_persistent_data *fdata = (php_my_resource_persistent_data*)rsrc->ptr;
     fclose(fdata->fp);
-    efree(fdata->filename);
-    efree(fdata);
+    pefree(fdata->filename, 1); //注意，这里是pe打头！
+    pefree(fdata, 1);
 }
 
 //自定义一个资源
 #define PHP_MY_FIRST_RES_TYPE_NAME "我的第一个资源" //资源类型的名称
-static int le_resource_id;                         //静态整形变量存储资源id（或者说资源对应析构函数的id）
+static int le_resource_id;                          //静态整形变量存储资源id（或者说资源对应析构函数的id）
+static int le_resource_persistent_id;               //持久资源类型id
 ZEND_MINIT_FUNCTION(my_minit_func)
 {
     //在析构列表中注册一个析构函数，并且得到对应的id返回给全局变量le_resource_id
     le_resource_id = zend_register_list_destructors_ex(php_my_resource_dtor, NULL, PHP_MY_FIRST_RES_TYPE_NAME,module_number);
 	php_printf("自定义了一个资源类型~\n");
+	
+	//在析构列表中注册一个永久资源的析构函数，注意第一个参数是NULL，第二个参数是析构函数！
+    le_resource_persistent_id = zend_register_list_destructors_ex(NULL, php_my_resource_persistent_dtor, PHP_MY_FIRST_RES_TYPE_NAME,module_number);
+	php_printf("自定义了一个永久资源类型~\n");
     return SUCCESS;
 }
 
@@ -118,7 +123,7 @@ zend_module_entry hq_module_entry = {
 #endif
     "hq", //这个地方是扩展名称，往往我们会在这个地方使用一个宏。
     hq_functions, /* Functions */
-		ZEND_MINIT(my_minit_func), /* MINIT */
+	ZEND_MINIT(my_minit_func), /* MINIT */
     NULL, /* MSHUTDOWN */
     NULL, /* RINIT */
     NULL, /* RSHUTDOWN */
