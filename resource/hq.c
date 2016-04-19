@@ -85,7 +85,11 @@ PHP_FUNCTION(my_fopen)
         efree(hash_key);
         return;
     }
-    }
+	else
+	{
+		//防止泄露~
+		efree(hash_key);
+	}
 	
     fp = fopen(filename, mode);
     if(!fp)
