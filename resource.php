@@ -19,7 +19,7 @@
     echo "\n\n普通资源均已释放，看看持久资源是否还有用呢：\n";
     //这句应该会利用到持久资源 
     $file3 = my_fopen("/tmp/test.txt", "a");
-    $cnt = my_fwrite($file3, "Hello\n");
+    $cnt = my_fwrite($file3, "World HAHA\n");
     echo "写入了".$cnt."个字节\n";
    
     echo "\nEnd\n";

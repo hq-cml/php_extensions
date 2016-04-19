@@ -143,8 +143,10 @@ ZEND_FUNCTION(my_fwrite)
         RETURN_NULL();
     }
     /* Use the zval* to verify the resource type and retrieve its pointer from the lookup table */
-    ZEND_FETCH_RESOURCE(fdata,php_my_resource_type*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id);
-     
+    //ZEND_FETCH_RESOURCE(fdata,php_my_resource_type*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id);
+    
+	//兼容普通和持久两种类型资源
+	ZEND_FETCH_RESOURCE2(fdata,php_my_resource_type*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id,le_resource_persistent_id);
     /* Write the data, and
      * return the number of bytes which were
      * successfully written to the file */
