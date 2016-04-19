@@ -56,28 +56,59 @@ PHP_FUNCTION(my_fopen)
     FILE* fp;
     char* filename, *mode;
     int filename_len, mode_len;
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",&filename, &filename_len,&mode, &mode_len) == FAILURE)
+	zend_bool persist = 0; //typedef unsigned char zend_bool;
+	
+	//可选参数，是否持久化
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|b",&filename, &filename_len,&mode, &mode_len,&persist) == FAILURE)
     {
         RETURN_NULL();
     }
+	
     if(!filename_len || !mode_len)
     {
         php_error_docref(NULL TSRMLS_CC, E_WARNING,"Invalid filename or mode length");
         RETURN_FALSE;
     }
+	
     fp = fopen(filename, mode);
     if(!fp)
     {
         php_error_docref(NULL TSRMLS_CC, E_WARNING,"Unable to open %s using mode %s",filename, mode);
         RETURN_FALSE;
     }
-	php_printf("创建了一个资源~\n");
-    //将fdata添加到资源池中HashTable去，并标记它为le_resource_id类型的。这样的话，析构的时候就知道用哪个析构函数析构这个资源了
-	//此外，把此资源在其中对应的数字Key赋给return_value。
-	fdata = emalloc(sizeof(php_my_resource_type));
-    fdata->fp = fp;
-    fdata->filename = estrndup(filename, filename_len);
-    ZEND_REGISTER_RESOURCE(return_value, fdata, le_resource_id);
+	
+	if(!persist)
+	{
+		php_printf("创建了一个普通资源~\n");
+		//将fdata添加到资源池中HashTable去，并标记它为le_resource_id类型的。这样的话，析构的时候就知道用哪个析构函数析构这个资源了
+		//此外，把此资源在其中对应的数字Key赋给return_value。
+		fdata = emalloc(sizeof(php_my_resource_type));
+		fdata->fp = fp;
+		fdata->filename = estrndup(filename, filename_len);
+		ZEND_REGISTER_RESOURCE(return_value, fdata, le_resource_id);	
+	}
+	else
+	{
+		php_printf("创建了一个永久资源~\n");
+		zend_rsrc_list_entry le;
+        char* hash_key;
+        int hash_key_len;
+ 
+        fdata =pemalloc(sizeof(php_my_resource_type),1);
+        fdata->filename = pemalloc(filename_len + 1, 1);
+        memcpy(fdata->filename, filename, filename_len + 1);
+        fdata->fp = fp;
+         
+        //在EG(regular_list中存一份)
+        ZEND_REGISTER_RESOURCE(return_value, fdata, le_resource_persistent_id);
+ 
+        //在EG(persistent_list)中再存一份
+        le.type = le_resource_persistent_id;
+        le.ptr = fdata;
+        hash_key_len = spprintf(&hash_key, 0,"my_persistent_resource:%s:%s", filename, mode);
+        zend_hash_update(&EG(persistent_list),hash_key, hash_key_len + 1,(void*)&le, sizeof(zend_rsrc_list_entry), NULL);
+        efree(hash_key);
+	}
 }
 
 //资源的使用
