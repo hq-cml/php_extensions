@@ -147,6 +147,20 @@ ZEND_FUNCTION(my_fwrite)
     
 	//兼容普通和持久两种类型资源
 	ZEND_FETCH_RESOURCE2(fdata,php_my_resource_type*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id,le_resource_persistent_id);
+	
+	//如果有更多种类型，可以直接用zend_fetch_resource，即把宏ZEND_FETCH_RESOURCE展开
+	//fp = (FILE*) zend_fetch_resource(
+	//	&file_descriptor TSRMLS_CC,
+	//	-1,
+	//	PHP_SAMPLE_DESCRIPTOR_RES_NAME,
+	//	NULL,
+	//	3,
+	//	le_sample_descriptor,
+	//	le_sample_descriptor_persist,
+	//	le_sample_othertype
+	//);
+	//ZEND_VERIFY_RESOURCE(fp);
+	
     /* Write the data, and
      * return the number of bytes which were
      * successfully written to the file */
