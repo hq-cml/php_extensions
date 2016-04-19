@@ -6,26 +6,28 @@ ZEND_FUNCTION(hq_hello)
     php_printf("Hello World!\n");
 }
 
-//一个更为复杂的自定义类型作为资源类型
-typedef struct _php_my_resource_persistent_data
+//一个自定义类型作为资源类型
+typedef struct _php_my_resource_type
 {
     char *filename;
     FILE *fp;
-}php_my_resource_persistent_data;
+}php_my_resource_type;
 
-//文件资源的析构函数
+//普通文件资源的析构函数
 static void php_my_resource_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	php_printf("释放了一个文件资源~\n");
-    FILE *fp = (FILE*)rsrc->ptr;
-    fclose(fp);
+    php_my_resource_type *fdata = (php_my_resource_type*)rsrc->ptr;
+    fclose(fdata->fp);
+    efree(fdata->filename); //注意，这里是e打头！
+    efree(fdata);
 }
 
-//复杂资源的析构函数
+//持久文件资源的析构函数
 static void php_my_resource_persistent_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	php_printf("释放了一个复杂资源~\n");
-    php_my_resource_persistent_data *fdata = (php_my_resource_persistent_data*)rsrc->ptr;
+    php_my_resource_type *fdata = (php_my_resource_type*)rsrc->ptr;
     fclose(fdata->fp);
     pefree(fdata->filename, 1); //注意，这里是pe打头！
     pefree(fdata, 1);
@@ -50,6 +52,7 @@ ZEND_MINIT_FUNCTION(my_minit_func)
 //创建资源
 PHP_FUNCTION(my_fopen)
 {
+	php_my_resource_type *fdata;
     FILE* fp;
     char* filename, *mode;
     int filename_len, mode_len;
@@ -69,15 +72,18 @@ PHP_FUNCTION(my_fopen)
         RETURN_FALSE;
     }
 	php_printf("创建了一个资源~\n");
-    //将fp添加到资源池中HashTable去，并标记它为le_sample_descriptor类型的。这样的话，析构的时候就知道用哪个析构函数析构这个资源了
+    //将fdata添加到资源池中HashTable去，并标记它为le_resource_id类型的。这样的话，析构的时候就知道用哪个析构函数析构这个资源了
 	//此外，把此资源在其中对应的数字Key赋给return_value。
-    ZEND_REGISTER_RESOURCE(return_value, fp, le_resource_id);
+	fdata = emalloc(sizeof(php_my_resource_type));
+    fdata->fp = fp;
+    fdata->filename = estrndup(filename, filename_len);
+    ZEND_REGISTER_RESOURCE(return_value, fdata, le_resource_id);
 }
 
 //资源的使用
 ZEND_FUNCTION(my_fwrite)
 {
-    FILE *fp;
+	php_my_resource_type *fdata;
     zval *file_resource; 
     char *data;
     int data_len;
@@ -86,18 +92,17 @@ ZEND_FUNCTION(my_fwrite)
         RETURN_NULL();
     }
     /* Use the zval* to verify the resource type and retrieve its pointer from the lookup table */
-    ZEND_FETCH_RESOURCE(fp,FILE*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id);
+    ZEND_FETCH_RESOURCE(fdata,php_my_resource_type*,&file_resource,-1,PHP_MY_FIRST_RES_TYPE_NAME,le_resource_id);
      
     /* Write the data, and
      * return the number of bytes which were
      * successfully written to the file */
-    RETURN_LONG(fwrite(data, 1, data_len, fp));
+    RETURN_LONG(fwrite(data, 1, data_len, fdata->fp));
 }
 
 //关闭文件资源
 PHP_FUNCTION(my_fclose)
 {
-    FILE *fp;
     zval *file_resource;
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r",&file_resource) == FAILURE ) {
         RETURN_NULL();
@@ -108,10 +113,24 @@ PHP_FUNCTION(my_fclose)
     RETURN_TRUE;
 }
 
+//获得文件名
+PHP_FUNCTION(get_fname)
+{
+    php_my_resource_type *fdata;
+    zval *file_resource;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r",&file_resource) == FAILURE )
+    {
+        RETURN_NULL();
+    }
+    ZEND_FETCH_RESOURCE(fdata, php_my_resource_type*,&file_resource, -1, PHP_MY_FIRST_RES_TYPE_NAME, le_resource_id);
+    RETURN_STRING(fdata->filename, 1);
+}
+
 static zend_function_entry hq_functions[] = {
 	ZEND_FE(my_fopen,        NULL)
 	ZEND_FE(my_fwrite,       NULL)
 	ZEND_FE(my_fclose,       NULL)
+	ZEND_FE(get_fname,       NULL)
     { NULL, NULL, NULL }
 };
 
