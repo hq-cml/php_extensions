@@ -26,7 +26,7 @@ static void php_my_resource_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 //持久文件资源的析构函数
 static void php_my_resource_persistent_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
-	php_printf("释放了一个复杂资源~\n");
+	php_printf("释放了一个永久资源~\n");
     php_my_resource_type *fdata = (php_my_resource_type*)rsrc->ptr;
     fclose(fdata->fp);
     pefree(fdata->filename, 1); //注意，这里是pe打头！
@@ -57,6 +57,10 @@ PHP_FUNCTION(my_fopen)
     char* filename, *mode;
     int filename_len, mode_len;
 	zend_bool persist = 0; //typedef unsigned char zend_bool;
+	        
+	char* hash_key;
+    int hash_key_len;
+	zend_rsrc_list_entry *existing_file;
 	
 	//可选参数，是否持久化
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|b",&filename, &filename_len,&mode, &mode_len,&persist) == FAILURE)
@@ -68,6 +72,19 @@ PHP_FUNCTION(my_fopen)
     {
         php_error_docref(NULL TSRMLS_CC, E_WARNING,"Invalid filename or mode length");
         RETURN_FALSE;
+    }
+	
+    //看看persistent_list中是否已经存在永久资源，如果已经存在就直接使用，不再创建
+    hash_key_len = spprintf(&hash_key, 0,"my_persistent_resource:%s:%s", filename, mode);
+    if(zend_hash_find(&EG(persistent_list), hash_key,hash_key_len + 1, (void**)&existing_file) == SUCCESS)
+    {
+		php_printf("找到存在一个持久资源，so，直接使用啦~\n");
+        //存在一个，则直接注册到普通资源列表
+		//TODO 实际场景中，此处应该验证一下这个持久资源是否还有效，比如mysql连接之类，如果长时间不使用，可能服务端会关闭连接导致资源失效
+        ZEND_REGISTER_RESOURCE(return_value, existing_file->ptr, le_resource_persistent_id);
+        efree(hash_key);
+        return;
+    }
     }
 	
     fp = fopen(filename, mode);
@@ -91,8 +108,7 @@ PHP_FUNCTION(my_fopen)
 	{
 		php_printf("创建了一个永久资源~\n");
 		zend_rsrc_list_entry le;
-        char* hash_key;
-        int hash_key_len;
+
  
         fdata =pemalloc(sizeof(php_my_resource_type),1);
         fdata->filename = pemalloc(filename_len + 1, 1);
