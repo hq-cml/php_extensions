@@ -22,6 +22,9 @@ ZEND_MINIT_FUNCTION(my_minit_func)
     //注册一个类，"myclass"是这个类的名称。
     INIT_CLASS_ENTRY(ce, "myclass",myclass_method);
     myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
+	
+	//定义属性:$public_var, 默认值null，权限public
+    zend_declare_property_null(myclass_ce, "public_var", strlen("public_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
     return SUCCESS;
 }
 
