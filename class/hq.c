@@ -9,8 +9,22 @@ ZEND_FUNCTION(hq_hello)
 //类的句柄
 zend_class_entry *myclass_ce;
 
+//定义类方法：ZEND_METHOD，注意区别上面那个叫ZEND_FUNCTION
+ZEND_METHOD( myclass , public_method )
+{
+    php_printf("我是public类型的方法\n");
+}
+ 
+ZEND_METHOD( myclass , __construct )
+{
+    php_printf("我是__construct方法\n");
+}
+
 //自定义类的方法列表
 static zend_function_entry myclass_method[] = {
+	//注意这个叫ZEND_ME，普通扩展函数是ZEND_FE
+	ZEND_ME(myclass,    public_method,  NULL,   ZEND_ACC_PUBLIC)
+    ZEND_ME(myclass,    __construct,    NULL,   ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
     { NULL, NULL, NULL }
 };
  
