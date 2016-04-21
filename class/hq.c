@@ -33,12 +33,15 @@ ZEND_MINIT_FUNCTION(my_minit_func)
 {
     zend_class_entry ce;
      
-    //注册一个类，"myclass"是这个类的名称。
+    //注册一个类，"myclass"是这个类的名称。myclass_method是类的方法列表
     INIT_CLASS_ENTRY(ce, "myclass",myclass_method);
     myclass_ce = zend_register_internal_class(&ce TSRMLS_CC);
 	
 	//定义属性:$public_var, 默认值null，权限public
     zend_declare_property_null(myclass_ce, "public_var", strlen("public_var"), ZEND_ACC_PUBLIC TSRMLS_CC);
+	
+	//定义常量
+	zend_declare_class_constant_long(myclass_ce, "MY_CONST" , strlen("MY_CONST"), 10 TSRMLS_CC);
     return SUCCESS;
 }
 
