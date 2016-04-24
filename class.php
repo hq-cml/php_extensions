@@ -47,16 +47,31 @@ $obj->public_method();
 echo "类有一个常量MY_CONST：".myclass::MY_CONST."\n";
 var_dump($obj);
 
-//接口实现
+//用PHP实现接口myinterface
 class myclass2 implements myinterface
 {
-    public $name="hello world!";
+    public $name="Ha Ha!";
 
     public function hello()
     {
     	echo $this->name."\n";
     }
 }
-
+echo "MyClass2's hello():";
 $obj= new myclass2();
 $obj->hello();
+
+//直接实例化化parent_class
+$parent = new parent_class();
+echo "Parents's hello():";
+$parent->hello();
+
+
+
+
+
+
+
+
+
+
