@@ -22,6 +22,25 @@ ZEND_METHOD( myclass , __construct )
 {
     php_printf("我是__construct方法\n");
 }
+ZEND_METHOD( myclass , update_get_member ) //在c扩展中操纵PHP对象的成员
+{
+    php_printf("我是update_get_member方法:\n");
+	zval *var;
+    zend_class_entry *ce;
+    ce = Z_OBJCE_P(getThis());
+    if( zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &var) == FAILURE )
+    {
+        php_printf("Error\n");
+        RETURN_NULL();
+    }
+    zend_update_property(ce, getThis(), "public_var", sizeof("public_var")-1, var TSRMLS_CC);
+     
+    var = NULL;
+     
+    var = zend_read_property(ce, getThis(), "public_var", sizeof("public_var")-1, 0 TSRMLS_CC);
+    php_var_dump(&var, 1 TSRMLS_CC);
+     
+}
 
 //父类的hello方法
 ZEND_METHOD(parent_class,hello)
@@ -41,8 +60,9 @@ ZEND_METHOD(son_class,call_hello)
 //自定义类的方法列表
 static zend_function_entry myclass_method[] = {
 	//注意这个叫ZEND_ME，普通扩展函数是ZEND_FE
-	ZEND_ME(myclass,    public_method,  NULL,   ZEND_ACC_PUBLIC)
-    ZEND_ME(myclass,    __construct,    NULL,   ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
+	ZEND_ME(myclass,    public_method,      NULL,   ZEND_ACC_PUBLIC)
+	ZEND_ME(myclass,    update_get_member,  NULL,   ZEND_ACC_PUBLIC)
+    ZEND_ME(myclass,    __construct,        NULL,   ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
     { NULL, NULL, NULL }
 };
 
@@ -67,7 +87,7 @@ static zend_function_entry son_class_method[]={
 
 
 //在C扩展中操作一个类，比如：先实例化之，再调用对象的函数
-ZEND_FUNCTION(init_class)
+ZEND_FUNCTION(operate_class)
 {
     zval *obj;
 	zval *method_1, *method_construct; //承载函数名的zval
@@ -98,7 +118,7 @@ ZEND_FUNCTION(init_class)
     return;
 }
 
-//MINIT函数，则侧一个类
+//MINIT函数，注册类
 ZEND_MINIT_FUNCTION(my_minit_func)
 {
     zend_class_entry ce1;      //普通类使用
@@ -137,7 +157,7 @@ ZEND_MINIT_FUNCTION(my_minit_func)
 
 static zend_function_entry hq_functions[] = {
 	ZEND_FE(hq_hello,        NULL)
-	ZEND_FE(init_class,      NULL)
+	ZEND_FE(operate_class,   NULL)
     { NULL, NULL, NULL }
 };
 

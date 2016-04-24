@@ -41,7 +41,7 @@ final class son_class extends parent_class
 }
 
 //这个函数卸载此处用于在C扩展中实现同样效果
-function init_class()
+function operate_class()
 {
     $obj = new myclass();
     $obj->public_methond();
@@ -49,9 +49,12 @@ function init_class()
 */
 
 $obj= new myclass();
+var_dump($obj);
 $obj->public_var = 1;
 $obj->public_method();
+echo "类有一个变量public_var：".$obj->public_var."\n";
 echo "类有一个常量MY_CONST：".myclass::MY_CONST."\n";
+$obj->update_get_member(20);
 var_dump($obj);
 echo "\n";
 
@@ -87,7 +90,7 @@ echo "\n";
 
 //实现在C扩展中
 echo "在c扩展中，操作一个PHP的类:\n";
-init_class();
+operate_class();
 
 
 
