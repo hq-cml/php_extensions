@@ -1,6 +1,22 @@
 //hq.c
 #include "php_hq.h"
 
+//定义全局变量(声明在头文件中)
+ZEND_DECLARE_MODULE_GLOBALS(hq);
+
+//全局变量的初始化函数
+static void php_hq_globals_ctor(zend_hq_globals *hq_globals TSRMLS_DC)
+{
+    /* Initialize a new zend_hq_globals struct During thread spin-up */
+     hq_globals->counter = 0;
+}
+
+//全局变量的析构（此处为空因为没有额外的emalloc数据）
+static void php_hq_globals_dtor(zend_hq_globals *hq_globals TSRMLS_DC)
+{
+    /* Any resources allocated during initialization May be freed here */
+}
+
 ZEND_FUNCTION(hq_hello)
 {
     php_printf("Hello World!\n");
@@ -9,11 +25,23 @@ ZEND_FUNCTION(hq_hello)
 PHP_MINIT_FUNCTION(hq)
 {
 	REGISTER_STRING_CONSTANT("HQ_VERSION", "1.0", CONST_CS | CONST_PERSISTENT);
+	
+#ifdef ZTS
+    ts_allocate_id(&hq_globals_id, sizeof(zend_hq_globals),
+					(ts_allocate_ctor)php_hq_globals_ctor, \
+                    (ts_allocate_dtor)php_hq_globals_dtor);
+#else
+    php_hq_globals_ctor(&hq_globals TSRMLS_CC);
+#endif
+
     return SUCCESS;
 }
  
 PHP_MSHUTDOWN_FUNCTION(hq) 
 {
+#ifndef ZTS
+    php_hq_globals_dtor(&hq_globals TSRMLS_CC);
+#endif
     return SUCCESS;
 }
  
