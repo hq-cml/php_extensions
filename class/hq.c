@@ -48,6 +48,7 @@ static zend_function_entry myclass_method[] = {
 
 //自定义接口的方法列表
 static zend_function_entry myinterface_method[]={
+	//ZEND_ABSTRACT_ME()宏声明一个abstract public类型的函数，这个函数不需要实现
     ZEND_ABSTRACT_ME(myinterface, hello, NULL) //注意这里的null指的是arginfo
     {NULL,NULL,NULL}
 };
@@ -63,6 +64,39 @@ static zend_function_entry son_class_method[]={
     ZEND_ME(son_class,call_hello,NULL,ZEND_ACC_PUBLIC)
     {NULL,NULL,NULL}
 };
+
+
+//在C扩展中操作一个类，比如：先实例化之，再调用对象的函数
+ZEND_FUNCTION(init_class)
+{
+    zval *obj;
+	zval *method_1, *method_construct; //承载函数名的zval
+	zval *retval; //承载函数返回值
+	
+    MAKE_STD_ZVAL(obj);
+    MAKE_STD_ZVAL(method_1);
+    MAKE_STD_ZVAL(method_construct);
+    MAKE_STD_ZVAL(retval);
+	
+	//函数名初始化
+	ZVAL_STRING(method_1, "public_method", 1); //用ZVAL_STRINGL 更快，请看前面教程
+	ZVAL_STRING(method_construct, "__construct", 1);
+	
+	//类初始化:$obj = new myclass();
+    object_init_ex(obj, myclass_ce);
+	
+    //如果确认此类没有构造函数就不用调用了。
+    call_user_function(NULL, &obj, method_construct, retval, 0, NULL TSRMLS_CC);
+	
+	//$obj->public_methond();
+	call_user_function(NULL, &obj, method_1, retval, 0, NULL TSRMLS_CC);
+
+    zval_ptr_dtor(&obj);
+    zval_ptr_dtor(&method_1);
+    zval_ptr_dtor(&method_construct);
+    zval_ptr_dtor(&retval);
+    return;
+}
 
 //MINIT函数，则侧一个类
 ZEND_MINIT_FUNCTION(my_minit_func)
@@ -103,6 +137,7 @@ ZEND_MINIT_FUNCTION(my_minit_func)
 
 static zend_function_entry hq_functions[] = {
 	ZEND_FE(hq_hello,        NULL)
+	ZEND_FE(init_class,      NULL)
     { NULL, NULL, NULL }
 };
 

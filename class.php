@@ -39,6 +39,13 @@ final class son_class extends parent_class
         $this->hello();
     }
 }
+
+//这个函数卸载此处用于在C扩展中实现同样效果
+function init_class()
+{
+    $obj = new myclass();
+    $obj->public_methond();
+}
 */
 
 $obj= new myclass();
@@ -46,6 +53,7 @@ $obj->public_var = 1;
 $obj->public_method();
 echo "类有一个常量MY_CONST：".myclass::MY_CONST."\n";
 var_dump($obj);
+echo "\n";
 
 //用PHP实现接口myinterface
 class myclass2 implements myinterface
@@ -60,11 +68,13 @@ class myclass2 implements myinterface
 echo "MyClass2's hello():";
 $obj= new myclass2();
 $obj->hello();
+echo "\n";
 
 //直接实例化化parent_class
 $parent = new parent_class();
 echo "Parents's hello():";
 $parent->hello();
+echo "\n";
 
 
 //直接实例化化son_class
@@ -73,8 +83,11 @@ echo "son's hello():";
 $son->hello();
 echo "son's call_hello():";
 $son->hello();
+echo "\n";
 
-
+//实现在C扩展中
+echo "在c扩展中，操作一个PHP的类:\n";
+init_class();
 
 
 
