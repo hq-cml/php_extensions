@@ -1,0 +1,2 @@
+<?php
+	hq_hello();
