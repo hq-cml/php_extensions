@@ -1,5 +1,7 @@
 <?php
 /*
+//C扩展实现了同等效果的如下PHP代码：
+//普通类定义
 class myclass
 {
     public $public_var;
@@ -14,28 +16,47 @@ class myclass
     }
 }
 
+//接口定义
 interface myinterface
 {
     public function hello();
 }
+
+//类实现了上面的接口
+class parent_class implements myinterface
+{
+    public function hello()
+    {
+        echo"Good Morning!\n";
+    }
+}
+ 
+//子类继承上面的基类
+final class son_class extends parent_class
+{
+    public function call_hello()
+    {
+        $this->hello();
+    }
+}
 */
 
-    $obj= new myclass();
-    $obj->public_var = 1;
-    $obj->public_method();
-    echo "类有一个常量MY_CONST：".myclass::MY_CONST."\n";
-    var_dump($obj);
+$obj= new myclass();
+$obj->public_var = 1;
+$obj->public_method();
+echo "类有一个常量MY_CONST：".myclass::MY_CONST."\n";
+var_dump($obj);
 
-    //接口实现
-    class myclass2 implements myinterface
+//接口实现
+class myclass2 implements myinterface
+{
+    public $name="hello world!";
+
+    public function hello()
     {
-	public $name="hello world!";
-
-	public function hello()
-	{
-		echo $this->name."\n";
-	}
+    	echo $this->name."\n";
     }
+}
 
-    $obj= new myclass2();
-    $obj->hello();
+$obj= new myclass2();
+$obj->hello();
