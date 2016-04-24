@@ -28,6 +28,16 @@ ZEND_METHOD(parent_class,hello)
 {
     php_printf("hello world!\n");
 }
+
+//子类的call_hello方法
+ZEND_METHOD(son_class,call_hello)
+{
+    //调用对象的方法
+    zval *this_zval;
+    this_zval = getThis();
+    zend_call_method_with_0_params(&this_zval, son_class_ce, NULL, "hello", NULL);
+}
+
 //自定义类的方法列表
 static zend_function_entry myclass_method[] = {
 	//注意这个叫ZEND_ME，普通扩展函数是ZEND_FE
@@ -35,6 +45,7 @@ static zend_function_entry myclass_method[] = {
     ZEND_ME(myclass,    __construct,    NULL,   ZEND_ACC_PUBLIC|ZEND_ACC_CTOR)
     { NULL, NULL, NULL }
 };
+
 //自定义接口的方法列表
 static zend_function_entry myinterface_method[]={
     ZEND_ABSTRACT_ME(myinterface, hello, NULL) //注意这里的null指的是arginfo
@@ -46,6 +57,13 @@ static zend_function_entry parent_class_method[]={
     ZEND_ME(parent_class,hello,NULL,ZEND_ACC_PUBLIC)
     {NULL,NULL,NULL}
 };
+ 
+//子类的方法列表
+static zend_function_entry son_class_method[]={
+    ZEND_ME(son_class,call_hello,NULL,ZEND_ACC_PUBLIC)
+    {NULL,NULL,NULL}
+};
+
 //MINIT函数，则侧一个类
 ZEND_MINIT_FUNCTION(my_minit_func)
 {
@@ -72,6 +90,13 @@ ZEND_MINIT_FUNCTION(my_minit_func)
     parent_class_ce = zend_register_internal_class(&ce3 TSRMLS_CC);
 	//使用zend_class_implements函数声明类实现的接口
     zend_class_implements(parent_class_ce TSRMLS_CC,1,myinterface_ce);
+ 
+ 
+    //定义子类，使用zend_register_internal_class_ex函数
+    INIT_CLASS_ENTRY(ce4,"son_class", son_class_method);
+    son_class_ce = zend_register_internal_class_ex(&ce4, parent_class_ce, "parent_class" TSRMLS_CC);
+    //注意：ZEND_ACC_FINAL是用来修饰方法的，而ZEND_ACC_FINAL_CLASS是用来修饰类的
+    son_class_ce->ce_flags |= ZEND_ACC_FINAL_CLASS;
 	
     return SUCCESS;
 }

@@ -67,6 +67,12 @@ echo "Parents's hello():";
 $parent->hello();
 
 
+//直接实例化化son_class
+$son = new son_class();
+echo "son's hello():";
+$son->hello();
+echo "son's call_hello():";
+$son->hello();
 
 
 
