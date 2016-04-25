@@ -16,5 +16,13 @@ extern zend_module_entry hq_module_entry;
 ZEND_BEGIN_MODULE_GLOBALS(hq)
     unsigned long counter;     //一个计数器
 ZEND_END_MODULE_GLOBALS(hq)
-   
+
+//全局变量的获取与使用
+#ifdef ZTS
+#include "TSRM.h"
+#define hq_G(v) TSRMG(hq_globals_id, zend_hq_globals*, v)
+#else
+#define hq_G(v) (hq_globals.v)
+#endif
+
 #endif
