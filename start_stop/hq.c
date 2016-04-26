@@ -54,6 +54,8 @@ PHP_MINIT_FUNCTION(hq)
  
 PHP_MSHUTDOWN_FUNCTION(hq) 
 {
+	php_printf("MSHUTDOWN!\n");
+
 #ifndef ZTS
     php_hq_globals_dtor(&hq_globals TSRMLS_CC);
 #endif
@@ -62,11 +64,13 @@ PHP_MSHUTDOWN_FUNCTION(hq)
  
 PHP_RINIT_FUNCTION(hq) 
 {
+	php_printf("RINIT!\n");
     return SUCCESS;
 }
 
 PHP_RSHUTDOWN_FUNCTION(hq) 
 {
+	php_printf("RSHUTDOWN!\n");
     return SUCCESS;
 }
  
@@ -79,6 +83,7 @@ PHP_MINFO_FUNCTION(hq) {
 
 static zend_function_entry hq_functions[] = {
     ZEND_FE(hq_hello,        NULL)
+    ZEND_FE(hq_counter,      NULL)
     { NULL, NULL, NULL }
 };
 
