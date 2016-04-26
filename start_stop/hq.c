@@ -56,6 +56,14 @@ PHP_MSHUTDOWN_FUNCTION(hq)
 {
 	php_printf("MSHUTDOWN!\n");
 
+//这句如果不加上，直接coredump。
+//在目前的教程中均没有提及，在stackoverflow上找到的答案:
+//http://stackoverflow.com/questions/10200193/php-module-crashes-on-ts-allocate-dtor
+#ifdef ZTS
+    ts_free_id(hq_globals_id); 
+#endif
+
+//注意，这里是ndef，因为如果是ZTS的话，dtor是自动的
 #ifndef ZTS
     php_hq_globals_dtor(&hq_globals TSRMLS_CC);
 #endif
