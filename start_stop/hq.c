@@ -1,6 +1,10 @@
 //hq.c
 #include "php_hq.h"
 
+ZEND_FUNCTION(hq_hello)
+{
+    php_printf("Hello World!\n");
+}
 //定义全局变量(声明在头文件中)
 ZEND_DECLARE_MODULE_GLOBALS(hq);
 
@@ -17,10 +21,6 @@ static void php_hq_globals_dtor(zend_hq_globals *hq_globals TSRMLS_DC)
     /* Any resources allocated during initialization May be freed here */
 }
 
-ZEND_FUNCTION(hq_hello)
-{
-    php_printf("Hello World!\n");
-}
 
 PHP_MINIT_FUNCTION(hq)
 {
