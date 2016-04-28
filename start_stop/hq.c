@@ -36,6 +36,19 @@ PHP_FUNCTION(hq_counter) {
     //RETURN_LONG(++hq_G(counter));
 }
 
+//超级全局变量
+zend_bool php_super_autoglobal_callback(char *name, uint name_len TSRMLS_DC)
+{
+    zval *super_global;
+    int i;
+    MAKE_STD_ZVAL(super_global);
+    array_init(super_global);
+    for(i = 0; i < 10; i++) {
+        add_next_index_long(super_global, i);
+    }
+    ZEND_SET_SYMBOL(&EG(symbol_table), "_SUPER_GLOBAL", super_global);
+    return 0;
+}
 
 PHP_MINIT_FUNCTION(hq)
 {
