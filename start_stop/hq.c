@@ -65,7 +65,7 @@ PHP_MINIT_FUNCTION(hq)
 	//超级全局变量
     //zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1, 0, php_super_autoglobal_callback TSRMLS_CC);
     zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1
-	, 0 //jit
+	, 0 //HQ：这个参数在教程里面是没有的，可能是版本不同，看了PHP5的源码之后，自己加的，具体的含义不是很清楚，但是看代码感觉应该是0
 	#ifdef ZEND_ENGINE_2
         , php_super_autoglobal_callback
 	#endif
