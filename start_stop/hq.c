@@ -95,6 +95,11 @@ PHP_MSHUTDOWN_FUNCTION(hq)
 PHP_RINIT_FUNCTION(hq) 
 {
 	php_printf("RINIT!\n");
+#ifdef ZEND_ENGINE_2
+    php_super_autoglobal_callback("_SUPER_GLOBAL",
+                    sizeof("_SUPER_GLOBAL") - 1
+                    TSRMLS_CC);
+#endif
     return SUCCESS;
 }
 
