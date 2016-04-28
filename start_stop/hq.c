@@ -36,7 +36,7 @@ PHP_FUNCTION(hq_counter) {
     //RETURN_LONG(++hq_G(counter));
 }
 
-//超级全局变量
+//超级全局变量的初始化回调函数
 zend_bool php_super_autoglobal_callback(char *name, uint name_len TSRMLS_DC)
 {
     zval *super_global;
@@ -62,7 +62,7 @@ PHP_MINIT_FUNCTION(hq)
     php_hq_globals_ctor(&hq_globals TSRMLS_CC);
 #endif
 
-	//超级全局变量
+	//注册超级全局变量
     //zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1, 0, php_super_autoglobal_callback TSRMLS_CC);
     zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1
 	, 0 //HQ：这个参数在教程里面是没有的，可能是版本不同，看了PHP5的源码之后，自己加的，具体的含义不是很清楚，但是看代码感觉应该是0
@@ -95,7 +95,8 @@ PHP_MSHUTDOWN_FUNCTION(hq)
 PHP_RINIT_FUNCTION(hq) 
 {
 	php_printf("RINIT!\n");
-#ifdef ZEND_ENGINE_2
+	//为了兼容PHP4，要在每个脚本开始的时候去调用初始化回调函数
+#ifndef ZEND_ENGINE_2
     php_super_autoglobal_callback("_SUPER_GLOBAL",
                     sizeof("_SUPER_GLOBAL") - 1
                     TSRMLS_CC);
