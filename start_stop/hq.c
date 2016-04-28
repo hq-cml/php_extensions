@@ -62,6 +62,15 @@ PHP_MINIT_FUNCTION(hq)
     php_hq_globals_ctor(&hq_globals TSRMLS_CC);
 #endif
 
+	//超级全局变量
+    //zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1, 0, php_super_autoglobal_callback TSRMLS_CC);
+    zend_register_auto_global("_SUPER_GLOBAL", sizeof("_SUPER_GLOBAL") - 1
+	, 0 //jit
+	#ifdef ZEND_ENGINE_2
+        , php_super_autoglobal_callback
+	#endif
+    TSRMLS_CC);
+	
     return SUCCESS;
 }
  
