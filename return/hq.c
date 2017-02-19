@@ -15,7 +15,7 @@ ZEND_FUNCTION(simple_return)
 ZEND_FUNCTION(sample_array_range)
 {
 	if(return_value_used) 
-         {
+    {
 		int i;
 		array_init(return_value);//把返回值初始化成一个PHP语言中的数组
 
