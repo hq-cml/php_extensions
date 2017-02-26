@@ -100,6 +100,8 @@ PHP_MINIT_FUNCTION(extskel)
 	/* If you have INI entries, uncomment these lines 
 	REGISTER_INI_ENTRIES();
 	*/
+	php_printf("New Minit!\n"); 	
+	FILE*fp=fopen("/tmp/test.txt","a+");
         php_printf("Minit!\n"); 
 	return SUCCESS;
 }
@@ -112,6 +114,10 @@ PHP_MSHUTDOWN_FUNCTION(extskel)
 	/* uncomment this line if you have INI entries
 	UNREGISTER_INI_ENTRIES();
 	*/
+        //实测发现Mshutdown的printf无法打印，但是文件写入正确执行了
+        //分析原因应该是标准输出被关闭了应该
+	php_printf("New Mshutdown!\n"); 	
+	FILE*fp=fopen("/tmp/test.txt","a+");
         php_printf("Mshutdown!\n");
 	return SUCCESS;
 }
@@ -122,6 +128,8 @@ PHP_MSHUTDOWN_FUNCTION(extskel)
  */
 PHP_RINIT_FUNCTION(extskel)
 {
+	php_printf("New Rinit!\n"); 	
+	FILE*fp=fopen("/tmp/test.txt","a+");
         php_printf("Rinit!\n");
 	return SUCCESS;
 }
@@ -132,6 +140,8 @@ PHP_RINIT_FUNCTION(extskel)
  */
 PHP_RSHUTDOWN_FUNCTION(extskel)
 {
+	php_printf("New Rshutdown!\n"); 	
+	FILE*fp=fopen("/tmp/test.txt","a+");
         php_printf("Rshutdown!\n");
 	return SUCCESS;
 }
