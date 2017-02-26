@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("extskel", "for extskel support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("extskel", "enable extskel support", "no");
+
+if (PHP_EXTSKEL != "no") {
+	EXTENSION("extskel", "extskel.c");
+}
+

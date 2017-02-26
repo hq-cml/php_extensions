@@ -2,7 +2,7 @@
 #ifndef HQ_H
 #define HQ_H
  
-// //加载config.h，如果配置了的话
+//加载config.h，如果配置了的话
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
